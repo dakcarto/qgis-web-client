@@ -14,13 +14,19 @@
     }
     #container {
       margin: 0 auto;
-      width: 700px;
+      width: 788px;
     }
-    h1 { font-size: 3.8em; color: #363; margin-bottom: 3px; }
+    h1 { font-size: 3em; color: #363; margin-bottom: 3px; }
+    h1 .medium { font-size: 0.75em; }
     h1 .small { font-size: 0.4em; }
     h1 a { text-decoration: none }
     h2 { font-size: 1.5em; color: #666; }
     h3 { text-align: center; color: #999; }
+    img { border: 0; }
+    li
+    {
+    	padding-bottom: 12px;
+    }
     a { color: #9C6; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
@@ -37,26 +43,63 @@
 
     <div class="download">
       <a href="https://github.com/dakcarto/qgis-web-client/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
+        <img width="90" src="https://github.com/images/modules/download/zip.png" alt=""></a>
       <a href="https://github.com/dakcarto/qgis-web-client/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+        <img width="90" src="https://github.com/images/modules/download/tar.png" alt=""></a>
     </div>
 
-    <h1><a href="https://github.com/dakcarto/qgis-web-client">qgis-web-client with extra layers</a>
+    <h1><a href="https://github.com/dakcarto/qgis-web-client">qgis-web-client <span class="medium">with extra layers</span></a>
       <span class="small">by <a href="https://github.com/dakcarto">dakcarto</a></span></h1>
 
     <div class="description">
-      A fork of the web client for the Quantum GIS mapserver project, which adds base layers and overlays to the current feature set of the client.
+      A fork of the <a href="https://github.com/qgis/qgis-web-client" target="_blank">Web Client for the Quantum GIS Server</a> project, which adds base layers and overlays to the current feature set of the client.
     </div>
+		
+		
+		<img alt="" src="extra-layers_hlight_8bA.png" width="788" height="510" />
+    <h2>What?</h2>
+    <p>Adds support for additional configured OpenLayers that become either base layers or overlays to the QGIS project map. This offers an advantage to having QGIS server as the client's only source, specifically when some layers of the project are moved to OpenLayers in the client.</p>
+    <h2>Why?</h2>
+    <ul>
+			<li><strong>Significant Performance Increase</strong></li>
+				<ul>
+					<li><em>Base layers and overlays can be served by another server process, or server, alleviating QGIS Server load.</em><br>
+					<br>
+					There's no need to ask QGIS Server to cascade services you won't be editing or styling, or base layers that have static content, like rasters. Depending on the project, using this method can <em>drastically</em> speed up the client's apparent rendering, compared to the same data solely served by QGIS Server.</li>
+					
+					<li><em>Base layers and overlays can be tiled and served as image files, allowing caching on server, CDNs and in browser.</em><br>
+					<br>
+					Unless agressive caching of query URLs is used on the server, or via a reverse proxy, all calls to QGIS Server remain uncached in the browser and elsewhere. Using QGIS Server with the project .qgs file a seeded cache of tiles can be generated using TileCache or MapProxy for project layers that can be OpenLayers in the client.<br>
+					<br>
+					While tile caching can be used as a source layer in the QGIS project file, cascading the service is required, which slows down the delivery of the resultant single image tile from QGIS Server to the client.</li>
+					
+					<li><em>Alleviating unnecessary QGIS Server load allows for faster label engine response.</em><br>
+					<br>
+					Less load frees up QGIS Server to work on dynamic labeling, styling and vector layers when called via WMS. Depending on your project, this method may give better quality results than a fully seeded tile cache of the whole project. The dynamic labeling engine will always be active in QGIS Server, avoiding clipped or crowed labels like can happen when generating even a buffered tile cache. This also gives full freedom to use QGIS for updates to those labeled layers without having to worry about re-tiling and proofing a cache.</li>
+				</ul>
+			<li><strong>Keeps Same OpenLayers-only Configuration Style</strong></li>
+				<ul>
+					<li>Regular users only need to know how to edit javascript and configure OpenLayers for this extra feature, similar to the current Global.js settings file. Should be simpler for the majority of users not wanting to learn GeoExt configuration and loader methods to include new layers in the map and map tree.</li>
+				</ul>
+		</ul>
+		<h2>Current Caveats</h2>
+		<ul>
+			<li><em>Printing to PDF only includes the QGIS layers, no client base layers or overlays.</em><br>
+			<br>
+			There may be a solution whereby a second .qgs project file, which includes the same additional layers as the client, is used for PDF creation. Another solution may be to directly generate a second temp .qgs project file (via copy of the original), dynamically adding the client base layers and overlays, before a call to generate the PDF. Then, delete the temp .qgs after PDF creation.</li>
+			
+			<li><em>Seeded, tiled base layers and overlays with defined resolutions may not match dpi of QGIS Server output.</em><br>
+			<br>Sloppy fix would be to use the screenDpi test to augment their OpenLayers tile size to 'match' the requested QGIS Server dpi.</li>
+			
+			<li>If anticipated visitor demographic has limited bandwidth, it may be faster to have QGIS Server render everything, instead of asking OpenLayers to use more of the visitors bandwidth with additional requests.</li>
+		</ul>
 
-    
-    
 
     <h2>Download</h2>
     <p>
       You can download this project in either
       <a href="https://github.com/dakcarto/qgis-web-client/zipball/master">zip</a> or
-      <a href="https://github.com/dakcarto/qgis-web-client/tarball/master">tar formats.
+      <a href="https://github.com/dakcarto/qgis-web-client/tarball/master">tar</a> formats.
     </p>
     <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
       by running:
